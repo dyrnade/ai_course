@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-
 class State:
     def __init__(self, name):
         self.name = name
@@ -42,40 +41,42 @@ class Problem:
 
         self.__frontier = [node]
         self.__explored = []
-
+        path_cost = 0
         while self.__frontier:
-            if not self.__frontier:
-                return "EMPTY?"
 
-            node = self.__frontier.pop()
-            # i = Action(State(""), )
-            if node.state.is_goal != True:
-                node.state.is_goal = True
-                self.__explored.append(node.state.name)
-                for each in node.action:
-                    child = Node(each.next_state, node, each.next_state.actions, each.step_cost)
-                    if child.state.name not in self.__explored and child not in self.__frontier:  # and node.state.is_goal != True:
-                        self.__frontier.append(child)
-                        if child.state == goal_states[0]:
-                            self.__explored.append(child.state.name)
-                            self.__solution(child)
-                            self.__print_diagnostics(node)
-                            return self.__explored
-            self.__print_diagnostics(node)
+            node = self.__frontier.pop() # pop the A from list to begin from it
 
-        return self.__explored
+            if node.state.is_goal != True: # check if the node is visited or not
+
+                node.state.is_goal = True # remark as it is visited
+                self.__explored.append(node.state.name) # ADD A (root) to explored list
+                path_cost += node.path_cost
+
+                for each in node.action: # for all childs
+                    child = Node(each.next_state, node, each.next_state.actions, each.step_cost) # create the child
+                    if child.state.name not in self.__explored and child not in self.__frontier: # check the child if it is not in explored and frontier list
+                        self.__frontier.append(child) # add it to frontier list
+                        if child.state == goal_states[0]: # if it is G return the solution
+                            self.__explored.append(child.state.name) # ADD the last item G even it is not explored.
+                            self.__print_diagnostics(node) # print the F's diagnotics
+                            path_cost += child.path_cost
+                            return ' -> '.join(self.__explored) + " path_cost = " + str(path_cost)
+
+            self.__print_diagnostics(node) # print every other nodes' diagnotics
 
     def __solution(self, goal_node):
         # Returns a string representation of the solution containing the
         # state names starting from the initial state to the given goal node.
         # It should also contain information about the path cost although the
         # search methods implemented here do not use the cost while finding the goal.
+        # solution = ""
+        # solution = solution + " -> " + goal_node.state.name
         solution = []
         solution.append(goal_node.state.name)
-        return solution
+        return '->'.join(solution) #+ str()
 
     def __print_diagnostics(self, node):
-        print('Explored node {}'.format(node.state.name))
+        print('Explored node {}'.format(node.state.name)) # + str(node.path_cost)
         print('  Frontier: {}'.format([i.state.name for i in self.__frontier]))
 
     @staticmethod
@@ -111,4 +112,6 @@ if __name__ == '__main__':
 
     problem = Problem('p1')
 
-    print([i for i in problem.depth_first_search(a, [g])])
+    print(problem.depth_first_search(a, [g]))
+
+    # print(problem.depth_first_search(a, [g]))
