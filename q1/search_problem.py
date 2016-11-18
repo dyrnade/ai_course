@@ -1,3 +1,5 @@
+# Cem GURESCI 200201027
+
 from __future__ import print_function
 from collections import deque  # you will use it for breadth-first search
 
@@ -53,18 +55,18 @@ class Problem:
 
         while self.__frontier:
 
-            node = self.__frontier.pop() # pop the A from list to begin from it
+            node = self.__frontier.pop() # pop the node from frontier list
 
-            self.__explored.append(node.state.name) # ADD A (root) to explored list
+            self.__explored.append(node.state.name) # ADD node to explored list
 
-            if node.state.name == goal_states[0].name:
+            if node.state.name == goal_states[0].name: # if it is G return the solution
                 return self.__solution(node)
 
             for each in node.action: # for all childs
                 child = Node(each.next_state, node, each.next_state.actions, each.step_cost + node.path_cost) # create the child
                 if child.state.name not in self.__explored and child not in self.__frontier: # check the child if it is not in explored and frontier list
                     self.__frontier.append(child) # add it to frontier list
-                    if child.state == goal_states[0]: # if it is G return the solution
+                    if child.state == goal_states[0]:
                         self.__explored.append(child.state.name) # ADD the last item G even it is not explored.
 
             self.__print_diagnostics(node) # print every other nodes' diagnotics
@@ -83,22 +85,22 @@ class Problem:
         self.__explored = []
 
         while self.__frontier:
-            node = self.__frontier.popleft() # pop the A from list to begin from it
+            node = self.__frontier.popleft() # pop the node from frontier list
 
-            if node.state.name not in self.__explored:
+            if node.state.name not in self.__explored: # ADD node to explored list
                 self.__explored.append(node.state.name)
 
-            if node.state.name == goal_states[0].name:
+            if node.state.name == goal_states[0].name: # if it is G return the solution
                 return self.__solution(node)
 
-            for each in sorted(node.action, key=lambda obj: obj.next_state.name):
-                child = Node(each.next_state, node, each.next_state.actions, each.step_cost + node.path_cost)
+            for each in sorted(node.action, key=lambda obj: obj.next_state.name): # for all childs (alphabetical order)
+                child = Node(each.next_state, node, each.next_state.actions, each.step_cost + node.path_cost) # create the child
 
-                if child.state.name not in self.__explored and child not in self.__frontier:
+                if child.state.name not in self.__explored and child not in self.__frontier: # check the child if it is not in explored and frontier list
                     self.__frontier.append(child)
                     self.__explored.append(child.state.name)
 
-            self.__print_diagnostics(node)
+            self.__print_diagnostics(node) # print every other nodes' diagnotics
 
     def __solution(self, goal_node):
         # Returns a string representation of the solution containing the
@@ -107,15 +109,15 @@ class Problem:
         # search methods implemented here do not use the cost while finding the goal.
 
         path = []
-        path.append(goal_node)
-        while goal_node.parent != None:
-            path.append(goal_node.parent)
-            goal_node = goal_node.parent
-        return '->'.join([node.state.name for node in reversed(path)]) + " path_cost " + str(path[0].path_cost)
+        path.append(goal_node) # first add node G
+        while goal_node.parent != None: # until there is no parent (which is A in this case) do loop
+            path.append(goal_node.parent) # add node's parent to path list
+            goal_node = goal_node.parent # make new node goal_node's parent
+        return '->'.join([node.state.name for node in reversed(path)]) + " path_cost " + str(path[0].path_cost) # return the string PATH and PATH_COST of G
 
     def __print_diagnostics(self, node):
-        print('Explored node ({0},{1})'.format(node.state.name, node.path_cost)) # + str(node.path_cost)
-        print('  Frontier: {}'.format([(i.state.name, i.path_cost) for i in self.__frontier]))
+        print('Explored node ({0},{1})'.format(node.state.name, node.path_cost)) # Explored node's name and path_cost
+        print('  Frontier: {}'.format([(i.state.name, i.path_cost) for i in self.__frontier])) # Frontier list
 
     @staticmethod
     def connect_states(source_state, dest_state, step_cost):
